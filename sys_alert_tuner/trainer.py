@@ -94,7 +94,7 @@ class ThresholdTuner:
         
         # Generate synthetic time series data
         start_time = datetime.now() - timedelta(days=30)
-        timestamps = pd.date_range(start_time, periods=10000, freq='5T')
+        timestamps = pd.date_range(start_time, periods=10000, freq='5min')
         
         data = []
         
@@ -371,14 +371,9 @@ def main():
     # Initialize tuner
     tuner = ThresholdTuner(config)
     
-    try:
-        # Try to load real Zabbix data
-        print("Attempting to load data from Zabbix...")
-        data = tuner.load_data_from_zabbix(days_back=7)
-    except Exception as e:
-        print(f"Failed to load Zabbix data: {e}")
-        print("Using sample data instead...")
-        data = tuner.load_sample_data()
+    # Try to load real Zabbix data - fail if not available
+    print("Attempting to load data from Zabbix...")
+    data = tuner.load_data_from_zabbix(days_back=7)
     
     # Prepare data
     prepared_data = tuner.prepare_data(data)

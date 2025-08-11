@@ -40,11 +40,11 @@ class ReplayBuffer:
         batch = random.sample(self.buffer, batch_size)
         state, action, reward, next_state, done = zip(*batch)
         return (
-            torch.FloatTensor(state),
-            torch.LongTensor(action),
-            torch.FloatTensor(reward),
-            torch.FloatTensor(next_state),
-            torch.BoolTensor(done)
+            torch.FloatTensor(np.array(state)),
+            torch.LongTensor(np.array(action)),
+            torch.FloatTensor(np.array(reward)),
+            torch.FloatTensor(np.array(next_state)),
+            torch.BoolTensor(np.array(done))
         )
     
     def __len__(self):
@@ -76,9 +76,18 @@ class DQNAgent:
         self.batch_size = batch_size
         self.target_update = target_update
         
-        # Device
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"Using device: {self.device}")
+        # Device selection with Metal Performance Shaders (MPS) support for Apple Silicon
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+            device_name = "CUDA GPU"
+        elif torch.backends.mps.is_available() and torch.backends.mps.is_built():
+            self.device = torch.device("mps")
+            device_name = "Apple Silicon GPU (Metal)"
+        else:
+            self.device = torch.device("cpu")
+            device_name = "CPU"
+        
+        print(f"Using device: {self.device} ({device_name})")
         
         # Networks
         self.q_network = DQNNetwork(state_size, action_size, hidden_size).to(self.device)

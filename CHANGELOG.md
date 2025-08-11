@@ -10,6 +10,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Nothing yet
 
+## [0.2.0] - 2025-08-12
+
+### Added
+- **Demo Mode** - New `demo` command for testing with synthetic data
+- **Shell Scripts for Linux/macOS**:
+  - `train-zabbix.sh` - Production mode launcher with error handling
+  - `train-demo.sh` - Demo mode launcher for quick testing
+- **Separated Training Modes**:
+  - Production mode (`train`) - Real Zabbix data only, fails gracefully
+  - Demo mode (`demo`) - Synthetic data, no Zabbix server required
+- **Performance Optimizations**:
+  - Fixed PyTorch tensor creation warnings (numpy array conversion)
+  - Updated pandas deprecation warnings (freq parameter)
+  - Apple Silicon GPU (Metal) support for faster training
+- **Enhanced Error Handling**:
+  - Production mode no longer falls back to demo data automatically
+  - Helpful error messages with demo mode suggestions
+  - Shell script validation for `.env` file existence
+
+### Changed
+- **Breaking Change**: `train` command no longer uses synthetic data fallback
+- **CLI Interface**: Added `demo` as fourth command option
+- **User Experience**: Clear separation between production and demo workflows
+- **Documentation**: Updated README.md with distinct usage patterns for both modes
+
+### Technical Improvements
+- **GPU Acceleration**: Metal Performance Shaders support for Apple Silicon
+- **Tensor Operations**: Optimized PyTorch tensor creation for better performance
+- **Authentication Flow**: Improved Zabbix API connection handling
+- **Error Messages**: More informative feedback for connection failures
+
+### Documentation
+- **Updated README**: Clear production vs demo mode documentation
+- **Shell Scripts**: Included in project structure and usage examples
+- **File Structure**: Updated to reflect new launcher scripts
+
 ## [0.1.0] - 2025-08-12
 
 ### Added

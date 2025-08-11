@@ -37,18 +37,21 @@ class ZabbixClient:
             self.zapi = ZabbixAPI(self.url)
             
             if self.token:
-                # Token-based authentication
-                self.zapi.session.headers.update({
-                    'Authorization': f'Bearer {self.token}',
-                    'Content-Type': 'application/json'
-                })
-                # Test connection by getting API version
+                # Token-based authentication for Zabbix 5.4+
+                # Test connection without auth header first (apiinfo.version doesn't need auth)
                 try:
                     api_info = self.zapi.apiinfo.version()
-                    print(f"Connected to Zabbix server: {self.url} (version: {api_info}) using token")
+                    print(f"Connected to Zabbix server: {self.url} (version: {api_info})")
+                    
+                    # Now set the token for authenticated requests
+                    self.zapi.session.headers.update({
+                        'Authorization': f'Bearer {self.token}',
+                        'Content-Type': 'application/json'
+                    })
+                    print("Token authentication configured successfully")
                 except Exception as e:
-                    print(f"Token authentication failed: {e}")
-                    raise ValueError("Invalid Zabbix token or token authentication not supported")
+                    print(f"Failed to connect to Zabbix server: {e}")
+                    raise ValueError("Cannot connect to Zabbix server")
             else:
                 # Username/password authentication
                 self.zapi.login(self.user, self.password)

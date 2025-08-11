@@ -112,9 +112,58 @@ def compare_thresholds():
         print(f"{strategy_name:<25} {threshold:<10.1f} {alert_rate:<12.2f}% {coverage:<10.1f}%")
 
 
+def demo_training():
+    """Run training with demo data"""
+    from sys_alert_tuner.trainer import ThresholdTuner
+    
+    config = {
+        'agent': {
+            'learning_rate': float(os.getenv('LEARNING_RATE', 0.001)),
+            'gamma': 0.95,
+            'epsilon': 1.0,
+            'epsilon_min': 0.01,
+            'epsilon_decay': 0.995,
+            'batch_size': int(os.getenv('BATCH_SIZE', 32)),
+            'memory_size': 10000,
+            'target_update': 100
+        }
+    }
+    
+    print("🎬 Starting DEMO mode with synthetic data...")
+    tuner = ThresholdTuner(config)
+    
+    # Force demo data (skip Zabbix)
+    print("Generating synthetic monitoring data...")
+    data = tuner.load_sample_data()
+    prepared_data = tuner.prepare_data(data)
+    
+    # Setup and train
+    tuner.setup_training(prepared_data)
+    episodes = int(os.getenv('TRAINING_EPISODES', 1000))
+    tuner.train(episodes=episodes)
+    
+    # Evaluate and save
+    eval_results, _ = tuner.evaluate(episodes=10)
+    
+    # Save model
+    os.makedirs('models', exist_ok=True)
+    model_path = f"models/demo_threshold_tuner_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pth"
+    tuner.save_model(model_path)
+    
+    # Plot results
+    os.makedirs('plots', exist_ok=True)
+    plot_path = f"plots/demo_training_progress_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    tuner.plot_training_progress(save_path=plot_path)
+    
+    print(f"\n🎉 DEMO training completed!")
+    print(f"📊 Model saved to: {model_path}")
+    print(f"📈 Plots saved to: {plot_path}")
+    print(f"🎯 Demo recommended threshold: {eval_results['recommended_threshold']:.2f}")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Zabbix Threshold Tuner')
-    parser.add_argument('command', choices=['train', 'evaluate', 'compare'], 
+    parser = argparse.ArgumentParser(description='Sys Alert Tuner - AI-powered monitoring threshold optimization')
+    parser.add_argument('command', choices=['train', 'evaluate', 'compare', 'demo'], 
                        help='Command to execute')
     parser.add_argument('--episodes', type=int, default=1000,
                        help='Number of training episodes (default: 1000)')
@@ -124,12 +173,22 @@ def main():
     args = parser.parse_args()
     
     if args.command == 'train':
-        print("Starting training...")
-        train_main()
+        print("🚀 Starting training with real Zabbix data...")
+        try:
+            train_main()
+        except Exception as e:
+            print(f"\n❌ Training failed: {e}")
+            print("\n💡 TIP: To test the system with synthetic data, run:")
+            print("   python main.py demo")
+            print("   # or")
+            print("   uv run python main.py demo")
+            sys.exit(1)
     elif args.command == 'evaluate':
         evaluate_model()
     elif args.command == 'compare':
         compare_thresholds()
+    elif args.command == 'demo':
+        demo_training()
 
 
 if __name__ == "__main__":

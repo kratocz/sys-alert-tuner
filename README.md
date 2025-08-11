@@ -78,37 +78,57 @@ cp .env.example .env
 
 ## Usage
 
-### Training
+The system supports two main modes: **Production mode** (with real Zabbix data) and **Demo mode** (with synthetic data).
 
-Train the agent on historical data:
+### 🚀 Production Mode - Train with Real Zabbix Data
+
+Train the agent using real monitoring data from your Zabbix server:
+
 ```bash
-# Using uv
-uv run sys-alert-tuner train --episodes 1000
+# Quick start with shell script (recommended)
+./train-zabbix.sh --episodes 500
 
-# Or with activated environment
-python main.py train --episodes 1000
+# Or manually
+uv run python main.py train --episodes 1000
+python main.py train --episodes 1000  # if using activated venv
 ```
 
-### Evaluation
+**Prerequisites:**
+- Configured `.env` file with Zabbix credentials
+- Zabbix server with accessible API
+- Historical monitoring data available
+
+### 🎬 Demo Mode - Test with Synthetic Data
+
+Train and test the system without a Zabbix server:
+
+```bash
+# Quick start with shell script (recommended)
+./train-demo.sh
+
+# Or manually  
+uv run python main.py demo --episodes 500
+python main.py demo --episodes 500  # if using activated venv
+```
+
+**Features:**
+- No Zabbix server required
+- Generates realistic synthetic monitoring data
+- Perfect for testing and demonstration
+- Same AI training pipeline as production mode
+
+### 📊 Evaluation and Analysis
 
 Evaluate a trained model:
 ```bash
-# Using uv
-uv run sys-alert-tuner evaluate
-
-# Or with activated environment
-python main.py evaluate
+uv run python main.py evaluate
+python main.py evaluate  # if using activated venv
 ```
-
-### Compare Thresholds
 
 Compare different threshold strategies:
 ```bash
-# Using uv
-uv run sys-alert-tuner compare
-
-# Or with activated environment
-python main.py compare
+uv run python main.py compare
+python main.py compare  # if using activated venv
 ```
 
 ## Configuration
@@ -171,20 +191,28 @@ After training, the system provides:
 - Training progress plots
 - Saved model files for reuse
 
-## Demo Mode
+## Demo vs Production Mode
 
-If Zabbix connection fails, the system automatically generates synthetic data for demonstration purposes.
+The system offers two distinct modes:
+
+- **🚀 Production Mode**: Uses real data from your Zabbix server for actual monitoring optimization
+- **🎬 Demo Mode**: Uses synthetic data for testing, learning, and demonstration purposes
+
+Both modes use the same AI training pipeline and produce comparable results, making demo mode perfect for evaluation and development.
 
 ## File Structure
 
 ```
 sys-alert-tuner/
-├── main.py                      # Main entry point
+├── main.py                      # Main CLI entry point
+├── train-zabbix.sh             # Production mode launcher (Linux/macOS)
+├── train-demo.sh               # Demo mode launcher (Linux/macOS)
 ├── pyproject.toml              # Project configuration and dependencies
 ├── uv.lock                     # Dependency lock file
 ├── .python-version             # Python version specification
 ├── .env.example               # Environment template
 ├── README.md                  # This file
+├── CHANGELOG.md               # Version history and changes
 ├── sys_alert_tuner/           # Main package
 │   ├── __init__.py
 │   ├── zabbix_client.py       # Zabbix API integration
@@ -194,7 +222,7 @@ sys-alert-tuner/
 │   └── trainer.py            # Training orchestration
 ├── models/                    # Saved models (created during training)
 ├── plots/                     # Generated visualizations
-└── tests/                     # Test files (optional)
+└── tests/                     # Test files
 ```
 
 ## Security
