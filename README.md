@@ -1,14 +1,20 @@
-# Zabbix Threshold Tuner
+# Sys Alert Tuner
 
-AI-powered system for optimizing trigger thresholds in Zabbix monitoring using Reinforcement Learning.
+AI-powered system for optimizing monitoring alert thresholds using Reinforcement Learning.
+
+**Currently supports:** Zabbix monitoring platform  
+**Planned support:** Prometheus, Elasticsearch, Grafana, and other monitoring systems
 
 ## Overview
 
 This project implements a Deep Q-Network (DQN) agent that learns to optimize alert thresholds based on historical monitoring data. The system aims to reduce false positives while maintaining coverage of real incidents.
 
+The current implementation focuses on Zabbix integration, with architectural design that allows for easy extension to other monitoring platforms in future releases.
+
 ## Features
 
-- **Zabbix Integration**: Connects to Zabbix API to fetch historical metrics
+- **Multi-Platform Design**: Extensible architecture for various monitoring systems
+- **Zabbix Integration**: Current implementation connects to Zabbix API to fetch historical metrics
 - **Deep Reinforcement Learning**: Uses DQN to learn optimal threshold adjustments
 - **Data Processing**: Advanced preprocessing with feature engineering
 - **Performance Metrics**: Tracks accuracy, precision, recall, and F1-score
@@ -288,14 +294,21 @@ uv add numpy
 uv add --dev pytest
 ```
 
-## Future Enhancements
+## Roadmap & Future Enhancements
 
-- Support for multiple threshold types
-- Integration with Prometheus and Elasticsearch
-- Advanced anomaly detection
-- Multi-agent threshold coordination
-- Web-based dashboard
-- A/B testing framework
+### Platform Support
+- **Prometheus Integration** - Support for PromQL metrics and alerting rules
+- **Elasticsearch Integration** - Log-based threshold optimization for Elastic Stack
+- **Grafana Integration** - Direct integration with Grafana dashboards and alerts
+- **Generic Metrics API** - Support for custom monitoring systems via REST APIs
+
+### Advanced Features
+- Support for multiple threshold types (static, dynamic, composite)
+- Advanced anomaly detection using autoencoders
+- Multi-agent threshold coordination across services
+- Web-based dashboard for visualization and management
+- A/B testing framework for threshold strategies
+- Real-time threshold adjustment based on system load
 
 ## Acknowledgments
 
